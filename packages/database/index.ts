@@ -1,0 +1,22 @@
+export * from '@prisma/client';
+export { PrismaClient } from '@prisma/client';
+
+// Re-export commonly used types
+import type { Prisma } from '@prisma/client';
+
+export type { Prisma };
+
+// Create a singleton instance for better performance in development
+import { PrismaClient } from '@prisma/client';
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
+
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  });
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;

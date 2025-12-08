@@ -1,0 +1,18 @@
+{
+  "name": "@zdi/utils",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc index.ts --outDir dist --module commonjs --target ES2022 --esModuleInterop --declaration true --declarationMap false --sourceMap false || true"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "date-fns": "^3.3.1"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "typescript": "^5.3.3"
+  }
+}

@@ -1,0 +1,735 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// USERS & AUTHENTICATION
+// ============================================================================
+
+enum Role {
+  SUPER_ADMIN
+  ORG_ADMIN
+  TEAM_LEAD
+  INSTRUCTOR
+  STUDENT
+  GUEST
+}
+
+enum SubscriptionTier {
+  FREE
+  INDIVIDUAL
+  TEAM
+  ENTERPRISE
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+  TRIALING
+  PAUSED
+}
+
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  passwordHash      String
+  firstName         String
+  lastName          String
+  role              Role      @default(STUDENT)
+  emailVerified     Boolean   @default(false)
+  emailVerifiedAt   DateTime?
+  mfaEnabled        Boolean   @default(false)
+  mfaSecret         String?
+  
+  // Multi-tenancy
+  organizationId    String?
+  organization      Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  // Subscription
+  subscriptionId    String?   @unique
+  subscription      Subscription? @relation(fields: [subscriptionId], references: [id])
+  
+  // Profile
+  avatar            String?
+  bio               String?
+  timezone          String    @default("UTC")
+  
+  // Security
+  lastLoginAt       DateTime?
+  lastLoginIp       String?
+  sessions          Session[]
+  
+  // Relations
+  enrollments       Enrollment[]
+  progress          Progress[]
+  certificates      Certificate[]
+  labSessions       LabSession[]
+  submissions       Submission[]
+  userAchievements  UserAchievement[]
+  stats             UserStats?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@index([email])
+  @@index([organizationId])
+  @@index([role])
+}
+
+model Session {
+  id                String    @id @default(cuid())
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  token             String    @unique
+  refreshToken      String    @unique
+  deviceId          String
+  deviceName        String?
+  ipAddress         String
+  userAgent         String?
+  
+  expiresAt         DateTime
+  createdAt         DateTime  @default(now())
+  
+  @@index([userId])
+  @@index([token])
+  @@index([refreshToken])
+}
+
+model Organization {
+  id                String    @id @default(cuid())
+  name              String
+  slug              String    @unique
+  domain            String?   @unique
+  
+  // Subscription & Billing
+  subscriptionId    String?   @unique
+  subscription      Subscription? @relation(fields: [subscriptionId], references: [id])
+  seats             Int       @default(5)
+  usedSeats         Int       @default(0)
+  
+  // SSO Configuration
+  ssoEnabled        Boolean   @default(false)
+  samlMetadata      String?
+  
+  // Settings
+  logo              String?
+  customDomain      String?
+  
+  users             User[]
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@index([slug])
+}
+
+model Subscription {
+  id                String              @id @default(cuid())
+  
+  // Stripe
+  stripeCustomerId      String          @unique
+  stripeSubscriptionId  String          @unique
+  stripePriceId         String
+  
+  tier              SubscriptionTier
+  status            SubscriptionStatus
+  
+  currentPeriodStart    DateTime
+  currentPeriodEnd      DateTime
+  cancelAtPeriodEnd     Boolean         @default(false)
+  trialEndsAt           DateTime?
+  
+  user              User?
+  organization      Organization?
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@index([stripeCustomerId])
+  @@index([stripeSubscriptionId])
+}
+
+// ============================================================================
+// MITRE ATT&CK FRAMEWORK
+// ============================================================================
+
+model MitreTactic {
+  id                String    @id // e.g., "TA0001"
+  name              String    // e.g., "Initial Access"
+  description       String    @db.Text
+  url               String
+  
+  techniques        MitreTechnique[]
+  courses           CourseMitreMapping[]
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@index([id])
+}
+
+model MitreTechnique {
+  id                String    @id // e.g., "T1566"
+  name              String    // e.g., "Phishing"
+  description       String    @db.Text
+  url               String
+  
+  tacticId          String
+  tactic            MitreTactic @relation(fields: [tacticId], references: [id], onDelete: Cascade)
+  
+  subtechniques     MitreSubtechnique[]
+  courses           CourseMitreMapping[]
+  challenges        ChallengeMitreMapping[]
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@index([tacticId])
+}
+
+model MitreSubtechnique {
+  id                String    @id // e.g., "T1566.001"
+  name              String    // e.g., "Spearphishing Attachment"
+  description       String    @db.Text
+  url               String
+  
+  techniqueId       String
+  technique         MitreTechnique @relation(fields: [techniqueId], references: [id], onDelete: Cascade)
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@index([techniqueId])
+}
+
+// ============================================================================
+// COURSES & CONTENT
+// ============================================================================
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+enum Category {
+  RED_TEAM
+  BLUE_TEAM
+  PURPLE_TEAM
+  GENERAL
+}
+
+model Course {
+  id                String    @id @default(cuid())
+  title             String
+  slug              String    @unique
+  description       String    @db.Text
+  thumbnail         String?
+  
+  difficulty        Difficulty
+  category          Category
+  
+  price             Int       @default(0) // in cents
+  isFree            Boolean   @default(false)
+  isPublished       Boolean   @default(false)
+  
+  // Content
+  modules           Module[]
+  
+  // MITRE ATT&CK mappings
+  mitreMappings     CourseMitreMapping[]
+  
+  // Enrollments
+  enrollments       Enrollment[]
+  
+  // Metadata
+  duration          Int?      // estimated minutes
+  prerequisites     String[]
+  learningOutcomes  String[]
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  publishedAt       DateTime?
+  
+  @@index([slug])
+  @@index([category])
+  @@index([difficulty])
+  @@index([isPublished])
+}
+
+model CourseMitreMapping {
+  id                String    @id @default(cuid())
+  
+  courseId          String
+  course            Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  
+  tacticId          String?
+  tactic            MitreTactic? @relation(fields: [tacticId], references: [id], onDelete: Cascade)
+  
+  techniqueId       String?
+  technique         MitreTechnique? @relation(fields: [techniqueId], references: [id], onDelete: Cascade)
+  
+  @@unique([courseId, tacticId, techniqueId])
+  @@index([courseId])
+  @@index([tacticId])
+  @@index([techniqueId])
+}
+
+model Module {
+  id                String    @id @default(cuid())
+  title             String
+  description       String?   @db.Text
+  order             Int
+  
+  courseId          String
+  course            Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  
+  lessons           Lesson[]
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@unique([courseId, order])
+  @@index([courseId])
+}
+
+enum LessonType {
+  VIDEO
+  TEXT
+  QUIZ
+  LAB
+  CHALLENGE
+}
+
+model Lesson {
+  id                String    @id @default(cuid())
+  title             String
+  type              LessonType
+  order             Int
+  
+  moduleId          String
+  module            Module    @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  
+  // Content based on type
+  videoId           String?
+  video             Video?    @relation(fields: [videoId], references: [id])
+  textContent       String?   @db.Text
+  quizId            String?
+  quiz              Quiz?
+  labId             String?
+  lab               Lab?
+  challengeId       String?
+  challenge         Challenge?
+  
+  // Resources
+  resources         Json?     // [{title, url, type}]
+  
+  // Progress tracking
+  progress          Progress[]
+  
+  isFreePreview     Boolean   @default(false)
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@unique([moduleId, order])
+  @@index([moduleId])
+  @@index([videoId])
+}
+
+// ============================================================================
+// VIDEO STREAMING
+// ============================================================================
+
+enum VideoStatus {
+  UPLOADING
+  PROCESSING
+  READY
+  FAILED
+}
+
+model Video {
+  id                String      @id @default(cuid())
+  title             String
+  description       String?     @db.Text
+  
+  // Original file
+  originalFilename  String
+  originalSize      Int         // bytes
+  originalUrl       String
+  
+  // Processing status
+  status            VideoStatus @default(UPLOADING)
+  processingError   String?
+  
+  // Duration
+  duration          Int?        // seconds
+  
+  // HLS outputs
+  qualities         Json?       // [{quality, url, size}]
+  playlistUrl       String?     // m3u8 file
+  thumbnailUrl      String?
+  
+  // DRM
+  encryptionKey     String?
+  
+  // Usage
+  lessons           Lesson[]
+  
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  @@index([status])
+}
+
+// ============================================================================
+// PROGRESS & ENROLLMENT
+// ============================================================================
+
+model Enrollment {
+  id                String    @id @default(cuid())
+  
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  courseId          String
+  course            Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  
+  progress          Int       @default(0) // percentage 0-100
+  completedAt       DateTime?
+  
+  enrolledAt        DateTime  @default(now())
+  lastAccessedAt    DateTime  @default(now())
+  
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
+}
+
+model Progress {
+  id                String    @id @default(cuid())
+  
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  lessonId          String
+  lesson            Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  
+  completed         Boolean   @default(false)
+  completedAt       DateTime?
+  
+  // Video-specific
+  watchTime         Int?      // seconds watched
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@unique([userId, lessonId])
+  @@index([userId])
+  @@index([lessonId])
+}
+
+// ============================================================================
+// QUIZZES
+// ============================================================================
+
+model Quiz {
+  id                String    @id @default(cuid())
+  lessonId          String    @unique
+  lesson            Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  
+  passingScore      Int       @default(70) // percentage
+  randomizeQuestions Boolean  @default(false)
+  timeLimit         Int?      // minutes
+  
+  questions         QuizQuestion[]
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+  SHORT_ANSWER
+}
+
+model QuizQuestion {
+  id                String        @id @default(cuid())
+  quizId            String
+  quiz              Quiz          @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  
+  question          String        @db.Text
+  type              QuestionType
+  order             Int
+  
+  options           Json?         // For multiple choice: [{id, text}]
+  correctAnswer     Json          // Answer key
+  explanation       String?       @db.Text
+  
+  points            Int           @default(1)
+  
+  @@index([quizId])
+}
+
+// ============================================================================
+// LABS & CHALLENGES
+// ============================================================================
+
+model Lab {
+  id                String    @id @default(cuid())
+  lessonId          String    @unique
+  lesson            Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  
+  name              String
+  description       String    @db.Text
+  
+  // Docker configuration
+  templateId        String    // References lab template
+  networkTopology   Json      // Network configuration
+  
+  // Objectives
+  objectives        Json      // [{id, title, description, points}]
+  
+  // Resources
+  estimatedTime     Int       // minutes
+  hints             Json?     // [{order, content}]
+  
+  sessions          LabSession[]
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+enum LabSessionStatus {
+  STARTING
+  RUNNING
+  STOPPED
+  FAILED
+}
+
+model LabSession {
+  id                String            @id @default(cuid())
+  
+  userId            String
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  labId             String
+  lab               Lab               @relation(fields: [labId], references: [id], onDelete: Cascade)
+  
+  status            LabSessionStatus
+  
+  // Container info
+  containerIds      Json              // List of container IDs
+  accessUrl         String?           // noVNC URL
+  
+  // Progress
+  completedObjectives Json            @default("[]") // Array of objective IDs
+  score             Int               @default(0)
+  
+  // Resource management
+  expiresAt         DateTime
+  
+  startedAt         DateTime          @default(now())
+  stoppedAt         DateTime?
+  
+  @@index([userId])
+  @@index([labId])
+  @@index([status])
+}
+
+model Challenge {
+  id                String    @id @default(cuid())
+  lessonId          String?   @unique
+  lesson            Lesson?   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  
+  title             String
+  description       String    @db.Text
+  category          String
+  difficulty        Difficulty
+  
+  // CTF
+  flag              String?   // Static flag
+  flagFormat        String?   // For dynamic flags: "ZDI{hash}"
+  
+  // Points
+  points            Int       @default(100)
+  
+  // Files & resources
+  files             Json?     // [{name, url, size}]
+  hints             Json?     // [{order, content, penaltyPoints}]
+  
+  // MITRE ATT&CK
+  mitreMappings     ChallengeMitreMapping[]
+  
+  // Submissions
+  submissions       Submission[]
+  
+  isPublished       Boolean   @default(false)
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@index([category])
+  @@index([difficulty])
+}
+
+model ChallengeMitreMapping {
+  id                String    @id @default(cuid())
+  
+  challengeId       String
+  challenge         Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  
+  techniqueId       String
+  technique         MitreTechnique @relation(fields: [techniqueId], references: [id], onDelete: Cascade)
+  
+  @@unique([challengeId, techniqueId])
+  @@index([challengeId])
+  @@index([techniqueId])
+}
+
+model Submission {
+  id                String    @id @default(cuid())
+  
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  challengeId       String
+  challenge         Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  
+  flag              String
+  isCorrect         Boolean
+  points            Int       @default(0)
+  
+  submittedAt       DateTime  @default(now())
+  
+  @@index([userId])
+  @@index([challengeId])
+  @@index([isCorrect])
+}
+
+// ============================================================================
+// CERTIFICATES
+// ============================================================================
+
+model Certificate {
+  id                String    @id @default(cuid())
+
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  courseId          String
+
+  certificateId     String    @unique // e.g., ZDI-ABC123XYZ456
+  verificationHash  String    @unique
+
+  pdfUrl            String
+
+  issuedAt          DateTime  @default(now())
+
+  @@index([userId])
+  @@index([certificateId])
+  @@index([verificationHash])
+}
+
+// ============================================================================
+// GAMIFICATION
+// ============================================================================
+
+enum AchievementType {
+  COURSE_COMPLETE
+  STREAK
+  POINTS_MILESTONE
+  LESSON_COMPLETE
+  QUIZ_PERFECT
+  LAB_COMPLETE
+  CHALLENGE_COMPLETE
+  FIRST_LOGIN
+  SOCIAL
+}
+
+model Achievement {
+  id                String            @id @default(cuid())
+  name              String
+  description       String            @db.Text
+  icon              String            // emoji or icon name
+  points            Int               @default(0)
+  type              AchievementType
+
+  // Criteria for earning (e.g., {"count": 10} for completing 10 courses)
+  criteria          Json?
+
+  // Rarity/tier
+  tier              String            @default("bronze") // bronze, silver, gold, platinum
+
+  isActive          Boolean           @default(true)
+
+  userAchievements  UserAchievement[]
+
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@index([type])
+  @@index([isActive])
+}
+
+model UserAchievement {
+  id                String      @id @default(cuid())
+
+  userId            String
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  achievementId     String
+  achievement       Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  progress          Int         @default(0) // For progressive achievements
+  earnedAt          DateTime?   // null if not yet earned
+
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+  @@index([achievementId])
+  @@index([earnedAt])
+}
+
+model UserStats {
+  id                String    @id @default(cuid())
+
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  totalPoints       Int       @default(0)
+  level             Int       @default(1)
+
+  // Streaks
+  currentStreak     Int       @default(0) // consecutive days
+  longestStreak     Int       @default(0)
+  lastActivityDate  DateTime  @default(now())
+
+  // Completion counts
+  coursesCompleted  Int       @default(0)
+  lessonsCompleted  Int       @default(0)
+  quizzesCompleted  Int       @default(0)
+  labsCompleted     Int       @default(0)
+  challengesCompleted Int     @default(0)
+
+  // Quiz stats
+  perfectScores     Int       @default(0)
+  averageQuizScore  Float     @default(0)
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([totalPoints])
+  @@index([level])
+  @@index([currentStreak])
+}
