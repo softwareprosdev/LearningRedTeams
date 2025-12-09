@@ -4,7 +4,7 @@ A full-stack cybersecurity learning platform focused on Red Team, Blue Team, and
 
 ## 🎯 Project Overview
 
-ZeroDayInstitute.com is an enterprise-grade cybersecurity education platform built with modern web technologies. The platform provides:
+ZeroDayInstitute.com is a comprehensive cybersecurity education platform built with modern web technologies. Our platform provides:
 
 - **Comprehensive Courses**: Expert-led cybersecurity training across Red/Blue/Purple teaming
 - **Live Testing Labs**: Browser-based virtual environments for hands-on practice
@@ -56,6 +56,8 @@ ZeroDayInstitute.com is an enterprise-grade cybersecurity education platform bui
 
 ## 🚀 Quick Start
 
+Get up and running with ZeroDayInstitute.com in just a few minutes!
+
 ### 1. Install Dependencies
 
 ```bash
@@ -76,6 +78,8 @@ cp .env.example .env
 # IMPORTANT: Change JWT secrets, Stripe keys, etc.
 ```
 
+See [`.env.example`](./.env.example) for a complete list of required environment variables.
+
 ### 3. Start Development Services
 
 ```bash
@@ -84,6 +88,8 @@ docker-compose -f docker-compose.dev.yml up -d
 
 # Wait for services to be ready (check with docker-compose ps)
 ```
+
+> **Note**: The development services are configured in [`docker-compose.dev.yml`](./docker-compose.dev.yml)
 
 ### 4. Setup Database
 
@@ -119,8 +125,8 @@ pnpm dev
 
 ## 📁 Project Structure
 
-```
-zeroday-institute/
+```text
+LearningRedTeams/
 ├── apps/
 │   ├── api/                    # NestJS backend API
 │   │   ├── src/
@@ -207,7 +213,7 @@ pnpm --filter @zdi/frontend lint
 
 ## 🔐 Environment Variables
 
-See `.env.example` for a complete list of required environment variables.
+See [`.env.example`](./.env.example) for a complete list of required environment variables.
 
 ### Critical Variables (MUST CHANGE IN PRODUCTION)
 
@@ -272,7 +278,7 @@ docker push ghcr.io/your-org/zdi-frontend:latest
 ```
 
 3. **Deploy via Coolify**:
-   - Use `infrastructure/coolify/docker-compose.yml`
+   - Use [`infrastructure/coolify/docker-compose.yml`](./infrastructure/coolify/docker-compose.yml)
    - Configure environment variables in Coolify dashboard
    - Set up domains and SSL certificates
    - Deploy!
@@ -283,7 +289,7 @@ The project includes GitHub Actions workflows for:
 - **CI**: Linting, type checking, testing, building
 - **CD**: Docker image building and deployment
 
-See `.github/workflows/` for details.
+See [`.github/workflows/`](./.github/workflows/) for details.
 
 ## 🗄️ Database Schema
 
@@ -388,7 +394,7 @@ docker-compose -f docker-compose.dev.yml exec postgres psql -U postgres -d zerod
 
 ## 🤝 Contributing
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for development guidelines.
+We welcome contributions! Please feel free to submit issues and pull requests to help improve the platform.
 
 ### Development Workflow
 
@@ -433,9 +439,8 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for development guidelines.
 ## 📞 Support
 
 For issues and questions:
-- GitHub Issues: [github.com/your-org/zeroday-institute/issues](https://github.com)
-- Documentation: See docs/ folder
-- Email: support@zerodayinstitute.com
+- **GitHub Issues**: Please use the Issues tab in this repository
+- **Email**: support@zerodayinstitute.com
 
 ## 📄 License
 
