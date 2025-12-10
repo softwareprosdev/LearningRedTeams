@@ -31,14 +31,22 @@ export default function LoginPage() {
 
   return (
     <PublicRoute>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4">
-        <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
-          <h1 className="text-3xl font-bold text-center text-gray-900 mb-8">
-            Welcome Back
-          </h1>
+      <div className="min-h-screen bg-black cyber-grid flex items-center justify-center px-4">
+        <div className="w-full max-w-md bg-zinc-950 border border-zinc-800 rounded-2xl shadow-2xl p-8 border-glow-red">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-red-600 rounded-xl flex items-center justify-center mx-auto mb-4 border-glow-red">
+              <span className="text-3xl text-white">🛡️</span>
+            </div>
+            <h1 className="text-3xl font-bold text-white mb-2">
+              Welcome Back
+            </h1>
+            <p className="text-neutral-400">
+              Access your cybersecurity training dashboard
+            </p>
+          </div>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            <div className="mb-6 p-4 bg-red-950/50 border border-red-600 text-red-400 rounded-lg">
               {error}
             </div>
           )}
@@ -47,7 +55,7 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-neutral-300 mb-2"
               >
                 Email Address
               </label>
@@ -57,7 +65,7 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-white placeholder-neutral-500 transition-all duration-200"
                 placeholder="you@example.com"
               />
             </div>
@@ -65,7 +73,7 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-neutral-300 mb-2"
               >
                 Password
               </label>
@@ -75,7 +83,7 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-white placeholder-neutral-500 transition-all duration-200"
                 placeholder="••••••••"
               />
             </div>
@@ -83,22 +91,22 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50"
+              className="w-full py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-all duration-200 disabled:opacity-50 border-glow-red"
             >
               {isLoading ? 'Logging in...' : 'Log In'}
             </button>
           </form>
 
-          <p className="text-center text-gray-600 mt-6">
+          <p className="text-center text-neutral-400 mt-6">
             Don't have an account?{' '}
-            <Link href="/signup" className="text-blue-600 hover:underline font-semibold">
+            <Link href="/signup" className="text-red-400 hover:text-red-300 font-semibold">
               Sign Up
             </Link>
           </p>
 
           {/* Demo credentials */}
-          <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded text-sm text-gray-700">
-            <p className="font-semibold mb-2">Demo Credentials:</p>
+          <div className="mt-8 p-4 bg-zinc-900 border border-zinc-700 rounded-lg text-sm text-neutral-400">
+            <p className="font-semibold mb-2 text-white">Demo Credentials:</p>
             <p>Email: demo@example.com</p>
             <p>Password: password123</p>
           </div>

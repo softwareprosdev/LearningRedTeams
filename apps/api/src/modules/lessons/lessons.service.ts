@@ -78,9 +78,7 @@ export class LessonsService {
     });
 
     if (existing) {
-      throw new ConflictException(
-        'A lesson with this order already exists in this module',
-      );
+      throw new ConflictException('A lesson with this order already exists in this module');
     }
 
     return this.prisma.lesson.create({
@@ -130,9 +128,7 @@ export class LessonsService {
       });
 
       if (existing) {
-        throw new ConflictException(
-          'A lesson with this order already exists in this module',
-        );
+        throw new ConflictException('A lesson with this order already exists in this module');
       }
     }
 
@@ -232,7 +228,11 @@ export class LessonsService {
     // If perfect, award quiz-perfect event (extra bonus points)
     if (percentage === 100) {
       try {
-        await this.gamificationService.awardPointsForEvent(userId, PointEventType.QUIZ_PERFECT, lessonId);
+        await this.gamificationService.awardPointsForEvent(
+          userId,
+          PointEventType.QUIZ_PERFECT,
+          lessonId,
+        );
       } catch (err) {
         console.warn('Failed to award quiz perfect gamification:', err?.message || err);
       }
@@ -241,10 +241,7 @@ export class LessonsService {
     return { score: percentage, passed, earnedPoints, maxPoints };
   }
 
-  async reorder(
-    moduleId: string,
-    lessonOrders: { id: string; order: number }[],
-  ): Promise<any[]> {
+  async reorder(moduleId: string, lessonOrders: { id: string; order: number }[]): Promise<any[]> {
     // Verify module exists
     const module = await this.prisma.module.findUnique({
       where: { id: moduleId },

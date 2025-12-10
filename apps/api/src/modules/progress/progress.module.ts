@@ -4,7 +4,6 @@ import { ProgressService } from './progress.service';
 import { PrismaModule } from '../prisma/prisma.module';
 import { GamificationModule } from '../gamification/gamification.module';
 
-
 @Module({
   imports: [PrismaModule, GamificationModule],
   controllers: [ProgressController],

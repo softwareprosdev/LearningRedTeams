@@ -92,9 +92,7 @@ export class AnalyticsService {
 
     // Calculate completion rate
     const completionRate =
-      totalEnrollments > 0
-        ? Math.round((totalCompletions / totalEnrollments) * 100)
-        : 0;
+      totalEnrollments > 0 ? Math.round((totalCompletions / totalEnrollments) * 100) : 0;
 
     return {
       totalStudents,
@@ -154,28 +152,21 @@ export class AnalyticsService {
     }
 
     const totalEnrollments = course.enrollments.length;
-    const completedEnrollments = course.enrollments.filter(
-      (e) => e.completedAt !== null
-    ).length;
+    const completedEnrollments = course.enrollments.filter((e) => e.completedAt !== null).length;
     const completionRate =
-      totalEnrollments > 0
-        ? Math.round((completedEnrollments / totalEnrollments) * 100)
-        : 0;
+      totalEnrollments > 0 ? Math.round((completedEnrollments / totalEnrollments) * 100) : 0;
 
     // Calculate average completion time
-    const completedWithTime = course.enrollments.filter(
-      (e) => e.completedAt && e.enrolledAt
-    );
+    const completedWithTime = course.enrollments.filter((e) => e.completedAt && e.enrolledAt);
     const avgCompletionTime =
       completedWithTime.length > 0
         ? Math.round(
             completedWithTime.reduce((sum, e) => {
               const days = Math.floor(
-                (e.completedAt!.getTime() - e.enrolledAt.getTime()) /
-                  (1000 * 60 * 60 * 24)
+                (e.completedAt!.getTime() - e.enrolledAt.getTime()) / (1000 * 60 * 60 * 24),
               );
               return sum + days;
-            }, 0) / completedWithTime.length
+            }, 0) / completedWithTime.length,
           )
         : 0;
 
@@ -187,7 +178,7 @@ export class AnalyticsService {
         moduleTitle: module.title,
         order: lesson.order,
         moduleOrder: module.order,
-      }))
+      })),
     );
 
     const lessonCompletionRates = await Promise.all(
@@ -202,12 +193,10 @@ export class AnalyticsService {
         return {
           ...lesson,
           completionRate:
-            totalEnrollments > 0
-              ? Math.round((completedCount / totalEnrollments) * 100)
-              : 0,
+            totalEnrollments > 0 ? Math.round((completedCount / totalEnrollments) * 100) : 0,
           completedCount,
         };
-      })
+      }),
     );
 
     // Get enrollment trend over time (last 90 days)
@@ -225,7 +214,7 @@ export class AnalyticsService {
       completionRate,
       avgCompletionTime,
       lessonCompletionRates: lessonCompletionRates.sort(
-        (a, b) => a.moduleOrder - b.moduleOrder || a.order - b.order
+        (a, b) => a.moduleOrder - b.moduleOrder || a.order - b.order,
       ),
       enrollmentTrend,
     };
@@ -273,7 +262,7 @@ export class AnalyticsService {
         student.enrollments.length > 0
           ? Math.round(
               student.enrollments.reduce((sum, e) => sum + e.progress, 0) /
-                student.enrollments.length
+                student.enrollments.length,
             )
           : 0,
     }));
@@ -339,7 +328,7 @@ export class AnalyticsService {
           totalLessons,
           completedLessons,
         };
-      })
+      }),
     );
 
     return {

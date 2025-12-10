@@ -1,4 +1,13 @@
-import { IsString, IsEnum, IsInt, Min, IsBoolean, IsOptional, IsJSON, IsArray } from 'class-validator';
+import {
+  IsString,
+  IsEnum,
+  IsInt,
+  Min,
+  IsBoolean,
+  IsOptional,
+  IsJSON,
+  IsArray,
+} from 'class-validator';
 
 export enum Difficulty {
   BEGINNER = 'BEGINNER',

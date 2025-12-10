@@ -29,7 +29,13 @@ describe('ChallengesService - submitFlag', () => {
   });
 
   it('returns success when flag matches static flag and awards gamification + progress when linked to lesson', async () => {
-    const challenge = { id: 'c1', flag: 'FLAG{abc}', isPublished: true, points: 100, lessonId: 'lesson-1' };
+    const challenge = {
+      id: 'c1',
+      flag: 'FLAG{abc}',
+      isPublished: true,
+      points: 100,
+      lessonId: 'lesson-1',
+    };
     prisma.challenge.findUnique.mockResolvedValue(challenge);
     prisma.submission.findFirst.mockResolvedValue(null);
     prisma.submission.create.mockResolvedValue({ id: 's1', isCorrect: true });
@@ -38,14 +44,23 @@ describe('ChallengesService - submitFlag', () => {
 
     expect(res).toEqual(expect.objectContaining({ isCorrect: true, points: 100 }));
     expect(prisma.submission.create).toHaveBeenCalled();
-    expect(prisma.progress.upsert).toHaveBeenCalledWith(expect.objectContaining({
-      where: { userId_lessonId: { userId: 'user-1', lessonId: 'lesson-1' } },
-    }));
-    expect(gamification.awardPoints).toHaveBeenCalledWith(expect.objectContaining({ userId: 'user-1', points: 100 }));
+    expect(prisma.progress.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { userId_lessonId: { userId: 'user-1', lessonId: 'lesson-1' } },
+      }),
+    );
+    expect(gamification.awardPoints).toHaveBeenCalledWith(
+      expect.objectContaining({ userId: 'user-1', points: 100 }),
+    );
   });
 
   it('returns incorrect when flag does not match', async () => {
-    prisma.challenge.findUnique.mockResolvedValue({ id: 'c2', flag: 'FLAG{yes}', isPublished: true, points: 50 });
+    prisma.challenge.findUnique.mockResolvedValue({
+      id: 'c2',
+      flag: 'FLAG{yes}',
+      isPublished: true,
+      points: 50,
+    });
     prisma.submission.findFirst.mockResolvedValue(null);
     prisma.submission.create.mockResolvedValue({ id: 's2', isCorrect: false });
 
@@ -60,16 +75,22 @@ describe('ChallengesService - submitFlag', () => {
     prisma.challenge.findUnique.mockResolvedValue({ id: 'c3', flag: 'F', isPublished: true });
     prisma.submission.findFirst.mockResolvedValue({ id: 's-exist', isCorrect: true });
 
-    await expect(service.submitFlag('c3', 'user-3', { flag: 'F' })).rejects.toThrow('You have already solved this challenge');
+    await expect(service.submitFlag('c3', 'user-3', { flag: 'F' })).rejects.toThrow(
+      'You have already solved this challenge',
+    );
   });
 
   it('throws NotFoundException when challenge not found', async () => {
     prisma.challenge.findUnique.mockResolvedValue(null);
-    await expect(service.submitFlag('missing', 'user-4', { flag: 'x' })).rejects.toThrow('Challenge not found');
+    await expect(service.submitFlag('missing', 'user-4', { flag: 'x' })).rejects.toThrow(
+      'Challenge not found',
+    );
   });
 
   it('throws BadRequestException when challenge unpublished', async () => {
     prisma.challenge.findUnique.mockResolvedValue({ id: 'c5', isPublished: false });
-    await expect(service.submitFlag('c5', 'user-5', { flag: 'x' })).rejects.toThrow('This challenge is not published');
+    await expect(service.submitFlag('c5', 'user-5', { flag: 'x' })).rejects.toThrow(
+      'This challenge is not published',
+    );
   });
 });

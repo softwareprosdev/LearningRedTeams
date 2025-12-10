@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AwardPointsDto, PointEventType } from './dto';
+import { AchievementType } from '@zdi/database';
 
 // Point values for different events
 const POINTS = {
@@ -13,15 +14,15 @@ const POINTS = {
 
 // Points needed for each level
 const LEVEL_THRESHOLDS = [
-  0,     // Level 1
-  100,   // Level 2
-  250,   // Level 3
-  500,   // Level 4
-  1000,  // Level 5
-  2000,  // Level 6
-  3500,  // Level 7
-  5500,  // Level 8
-  8000,  // Level 9
+  0, // Level 1
+  100, // Level 2
+  250, // Level 3
+  500, // Level 4
+  1000, // Level 5
+  2000, // Level 6
+  3500, // Level 7
+  5500, // Level 8
+  8000, // Level 9
   11000, // Level 10
 ];
 
@@ -54,7 +55,7 @@ export class GamificationService {
     return stats;
   }
 
-  async getUserStats(userId: string) {
+  async getUserStats(userId: string): Promise<any> {
     const stats = await this.getOrCreateUserStats(userId);
 
     // Get user achievements
@@ -66,14 +67,15 @@ export class GamificationService {
 
     // Calculate next level info
     const currentLevel = stats.level;
-    const nextLevelThreshold = LEVEL_THRESHOLDS[currentLevel] || LEVEL_THRESHOLDS[LEVEL_THRESHOLDS.length - 1] * 2;
+    const nextLevelThreshold =
+      LEVEL_THRESHOLDS[currentLevel] || LEVEL_THRESHOLDS[LEVEL_THRESHOLDS.length - 1] * 2;
     const currentLevelThreshold = LEVEL_THRESHOLDS[currentLevel - 1] || 0;
     const progressToNextLevel = stats.totalPoints - currentLevelThreshold;
     const pointsNeededForNextLevel = nextLevelThreshold - currentLevelThreshold;
 
     return {
       ...stats,
-      achievements: achievements.map(ua => ({
+      achievements: achievements.map((ua) => ({
         ...ua.achievement,
         earnedAt: ua.earnedAt,
       })),
@@ -86,10 +88,7 @@ export class GamificationService {
   async getLeaderboard(limit: number = 100) {
     const topUsers = await this.prisma.userStats.findMany({
       take: limit,
-      orderBy: [
-        { totalPoints: 'desc' },
-        { level: 'desc' },
-      ],
+      orderBy: [{ totalPoints: 'desc' }, { level: 'desc' }],
       include: {
         user: {
           select: {
@@ -236,14 +235,14 @@ export class GamificationService {
   // ACHIEVEMENTS
   // ============================================================================
 
-  async getAllAchievements() {
+  async getAllAchievements(): Promise<any[]> {
     return this.prisma.achievement.findMany({
       where: { isActive: true },
       orderBy: [{ type: 'asc' }, { points: 'asc' }],
     });
   }
 
-  async getUserAchievements(userId: string) {
+  async getUserAchievements(userId: string): Promise<any[]> {
     return this.prisma.userAchievement.findMany({
       where: { userId },
       include: { achievement: true },
@@ -309,7 +308,11 @@ export class GamificationService {
     return newAchievements;
   }
 
-  private checkAchievementCriteria(achievement: any, eventType: PointEventType, stats: any): boolean {
+  private checkAchievementCriteria(
+    achievement: any,
+    eventType: PointEventType,
+    stats: any,
+  ): boolean {
     const criteria = achievement.criteria as any;
 
     switch (achievement.type) {
@@ -530,11 +533,29 @@ export class GamificationService {
 
     const created = [];
     for (const data of achievementsData) {
-      const achievement = await this.prisma.achievement.upsert({
+      // Convert string type to AchievementType enum
+      const achievementData = {
+        ...data,
+        type: data.type as AchievementType,
+      };
+
+      // First try to find by name, then create if not found
+      let achievement = await this.prisma.achievement.findFirst({
         where: { name: data.name },
-        create: data,
-        update: data,
       });
+
+      if (achievement) {
+        // Update existing achievement
+        achievement = await this.prisma.achievement.update({
+          where: { id: achievement.id },
+          data: achievementData,
+        });
+      } else {
+        // Create new achievement
+        achievement = await this.prisma.achievement.create({
+          data: achievementData,
+        });
+      }
       created.push(achievement);
     }
 

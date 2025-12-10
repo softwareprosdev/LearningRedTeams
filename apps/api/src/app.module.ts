@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
@@ -14,12 +15,13 @@ import { LabsModule } from './modules/labs/labs.module';
 import { ChallengesModule } from './modules/challenges/challenges.module';
 import { ProgressModule } from './modules/progress/progress.module';
 import { CertificatesModule } from './modules/certificates/certificates.module';
+import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
+      envFilePath: ['.env', 'apps/api/.env'],
     }),
     PrismaModule,
     AuthModule,
@@ -35,6 +37,12 @@ import { CertificatesModule } from './modules/certificates/certificates.module';
     GamificationModule,
     LabsModule,
     ChallengesModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
   ],
 })
 export class AppModule {}

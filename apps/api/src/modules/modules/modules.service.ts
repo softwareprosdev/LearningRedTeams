@@ -66,9 +66,7 @@ export class ModulesService {
     });
 
     if (existing) {
-      throw new ConflictException(
-        'A module with this order already exists in this course',
-      );
+      throw new ConflictException('A module with this order already exists in this course');
     }
 
     return this.prisma.module.create({
@@ -108,9 +106,7 @@ export class ModulesService {
       });
 
       if (existing) {
-        throw new ConflictException(
-          'A module with this order already exists in this course',
-        );
+        throw new ConflictException('A module with this order already exists in this course');
       }
     }
 

@@ -13,7 +13,9 @@
     "build": "tsc index.ts --outDir dist --module commonjs --target ES2022 --esModuleInterop --declaration false --sourceMap false || true"
   },
   "dependencies": {
-    "@prisma/client": "^5.9.1"
+    "@prisma/client": "^5.9.1",
+    "@types/bcrypt": "^6.0.0",
+    "bcrypt": "^6.0.0"
   },
   "devDependencies": {
     "prisma": "^5.9.1",

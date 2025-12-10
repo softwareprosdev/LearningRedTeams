@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ConflictException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { GamificationService } from '../gamification/gamification.service';
 import { PointEventType } from '../gamification/dto/award-points.dto';
@@ -96,7 +101,11 @@ export class ChallengesService {
     return challengeWithoutFlag;
   }
 
-  async submitFlag(challengeId: string, userId: string, submitFlagDto: SubmitFlagDto): Promise<any> {
+  async submitFlag(
+    challengeId: string,
+    userId: string,
+    submitFlagDto: SubmitFlagDto,
+  ): Promise<any> {
     const challenge = await this.prisma.challenge.findUnique({
       where: { id: challengeId },
     });

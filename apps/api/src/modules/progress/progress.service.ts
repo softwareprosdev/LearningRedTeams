@@ -186,7 +186,11 @@ export class ProgressService {
 
     // Award points for lesson completion
     try {
-      await this.gamificationService.awardPointsForEvent(userId, PointEventType.LESSON_COMPLETE, lessonId);
+      await this.gamificationService.awardPointsForEvent(
+        userId,
+        PointEventType.LESSON_COMPLETE,
+        lessonId,
+      );
     } catch (err) {
       // Ignore gamification failures so progress still completes
       console.warn('Gamification award failed for lesson complete:', err?.message || err);
@@ -198,7 +202,11 @@ export class ProgressService {
     // If course is now complete, award course completion points
     if (progressPercentage === 100) {
       try {
-        await this.gamificationService.awardPointsForEvent(userId, PointEventType.COURSE_COMPLETE, lesson.module.courseId);
+        await this.gamificationService.awardPointsForEvent(
+          userId,
+          PointEventType.COURSE_COMPLETE,
+          lesson.module.courseId,
+        );
       } catch (err) {
         console.warn('Gamification award failed for course complete:', err?.message || err);
       }
@@ -228,7 +236,7 @@ export class ProgressService {
     }
 
     // Get all lessons for the course
-    const allLessons = course.modules.flatMap(module => module.lessons);
+    const allLessons = course.modules.flatMap((module) => module.lessons);
     const totalLessons = allLessons.length;
 
     if (totalLessons === 0) {
@@ -246,12 +254,12 @@ export class ProgressService {
       where: {
         userId,
         lessonId: {
-          in: allLessons.map(l => l.id),
+          in: allLessons.map((l) => l.id),
         },
       },
     });
 
-    const completedLessons = userProgress.filter(p => p.completed).length;
+    const completedLessons = userProgress.filter((p) => p.completed).length;
     const progressPercentage = Math.round((completedLessons / totalLessons) * 100);
 
     // Get enrollment
@@ -291,7 +299,7 @@ export class ProgressService {
       return;
     }
 
-    const allLessons = course.modules.flatMap(module => module.lessons);
+    const allLessons = course.modules.flatMap((module) => module.lessons);
     const totalLessons = allLessons.length;
 
     if (totalLessons === 0) {
@@ -303,7 +311,7 @@ export class ProgressService {
       where: {
         userId,
         lessonId: {
-          in: allLessons.map(l => l.id),
+          in: allLessons.map((l) => l.id),
         },
         completed: true,
       },

@@ -9,7 +9,9 @@
   },
   "packageManager": "pnpm@8.15.1",
   "scripts": {
-    "dev": "turbo run dev",
+    "dev": "concurrently \"pnpm --filter api dev\" \"pnpm --filter frontend dev\" --names \"api,frontend\" --prefix-colors \"blue,magenta\"",
+    "dev:api": "pnpm --filter api dev",
+    "dev:frontend": "pnpm --filter frontend dev",
     "build": "turbo run build",
     "start": "turbo run start",
     "lint": "turbo run lint",
@@ -26,7 +28,8 @@
     "@turbo/gen": "^1.12.4",
     "turbo": "^1.12.4",
     "prettier": "^3.2.5",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "concurrently": "^9.1.0"
   },
   "workspaces": [
     "apps/*",

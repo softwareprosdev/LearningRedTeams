@@ -1,3 +1,88 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+    @apply bg-black text-white;
+  }
+  
+  /* Make all text elements dark theme by default */
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-white;
+  }
+  
+  p, span, div {
+    @apply text-neutral-300;
+  }
+  
+  /* Override default form styles */
+  input, textarea, select {
+    @apply bg-zinc-900 border-zinc-700 text-white placeholder-neutral-500;
+  }
+  
+  /* Override default link styles */
+  a {
+    @apply text-neutral-300 hover:text-red-400;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl;
+  }
+  
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:border-blue-600 hover:text-blue-600 transition-all duration-200;
+  }
+  
+  .section-padding {
+    @apply py-16 lg:py-24;
+  }
+  
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent;
+  }
+
+  .text-gradient-red {
+    @apply bg-gradient-to-r from-red-600 to-red-500 bg-clip-text text-transparent;
+  }
+
+  .glow-red {
+    text-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+  }
+
+  .border-glow-red {
+    box-shadow: 0 0 15px rgba(220, 38, 38, 0.3);
+  }
+
+  .border-glow-red-hover:hover {
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
+  }
+
+  .cyber-grid {
+    background-image:
+      linear-gradient(rgba(220, 38, 38, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(220, 38, 38, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .card-hover {
+    @apply transition-all duration-200 hover:shadow-lg hover:-translate-y-1;
+  }
+
+  .glass-effect {
+    @apply bg-white/80 backdrop-blur-sm border border-white/20;
+  }
+}

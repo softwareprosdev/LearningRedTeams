@@ -74,7 +74,13 @@ describe('GamificationController (integration)', () => {
       providers: [{ provide: GamificationService, useValue: mockService }],
     })
       .overrideGuard(JwtAuthGuard)
-      .useValue({ canActivate: (ctx: any) => { const req = ctx.switchToHttp().getRequest(); req.user = { id: 'u1' }; return true; } })
+      .useValue({
+        canActivate: (ctx: any) => {
+          const req = ctx.switchToHttp().getRequest();
+          req.user = { id: 'u1' };
+          return true;
+        },
+      })
       .compile();
 
     const allowApp = allowModule.createNestApplication();
@@ -86,7 +92,9 @@ describe('GamificationController (integration)', () => {
     expect(mockService.getUserStats).toHaveBeenCalledWith('u1');
 
     // test award-points (POST)
-    const awardRes = await request(allowApp.getHttpServer()).post('/api/v1/gamification/award-points').send({ userId: 'u1', points: 10, eventType: 'CUSTOM' });
+    const awardRes = await request(allowApp.getHttpServer())
+      .post('/api/v1/gamification/award-points')
+      .send({ userId: 'u1', points: 10, eventType: 'CUSTOM' });
     // controller passes through to service - we mocked response
     // Accept any 2xx success code (201 is returned for POST by default)
     expect(awardRes.status).toBeGreaterThanOrEqual(200);
@@ -94,7 +102,9 @@ describe('GamificationController (integration)', () => {
     expect(mockService.awardPoints).toHaveBeenCalled();
 
     // test seed achievements
-    const seedRes = await request(allowApp.getHttpServer()).post('/api/v1/gamification/seed-achievements');
+    const seedRes = await request(allowApp.getHttpServer()).post(
+      '/api/v1/gamification/seed-achievements',
+    );
     expect(seedRes.status).toBeGreaterThanOrEqual(200);
     expect(seedRes.status).toBeLessThan(300);
     expect(mockService.seedAchievements).toHaveBeenCalled();

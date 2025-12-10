@@ -114,10 +114,10 @@ export default function LabSessionPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading lab...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto"></div>
+          <p className="mt-4 text-neutral-300">Loading lab...</p>
         </div>
       </div>
     );
@@ -125,10 +125,10 @@ export default function LabSessionPage() {
 
   if (!lab) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900">Lab not found</h1>
-          <p className="mt-2 text-gray-600">The requested lab could not be found.</p>
+          <h1 className="text-2xl font-bold text-white">Lab not found</h1>
+          <p className="mt-2 text-neutral-400">The requested lab could not be found.</p>
         </div>
       </div>
     );
@@ -138,22 +138,22 @@ export default function LabSessionPage() {
   const hints = (lab.hints || []) as Hint[];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-black">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 mb-6">
           <div className="flex justify-between items-start">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">{lab.name}</h1>
-              <p className="mt-2 text-gray-600">{lab.description}</p>
-              <div className="mt-4 flex items-center space-x-4 text-sm text-gray-500">
+              <h1 className="text-3xl font-bold text-white">{lab.name}</h1>
+              <p className="mt-2 text-neutral-300">{lab.description}</p>
+              <div className="mt-4 flex items-center space-x-4 text-sm text-neutral-500">
                 <span>Estimated Time: {lab.estimatedTime} minutes</span>
               </div>
             </div>
             {session?.status === 'RUNNING' && (
               <div className="text-right">
-                <div className="text-sm font-medium text-gray-700">Time Remaining</div>
-                <div className="text-2xl font-bold text-blue-600">{timeRemaining}</div>
+                <div className="text-sm font-medium text-neutral-300">Time Remaining</div>
+                <div className="text-2xl font-bold text-red-500">{timeRemaining}</div>
               </div>
             )}
           </div>
@@ -163,22 +163,22 @@ export default function LabSessionPage() {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Lab Environment */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Lab Environment</h2>
+            <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6">
+              <h2 className="text-xl font-bold text-white mb-4">Lab Environment</h2>
 
               {!session ? (
                 <div className="text-center py-12">
                   <div className="mb-4">
-                    <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="mx-auto h-12 w-12 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Lab session not started</h3>
-                  <p className="text-gray-600 mb-6">Click the button below to start your lab session</p>
+                  <h3 className="text-lg font-medium text-white mb-2">Lab session not started</h3>
+                  <p className="text-neutral-400 mb-6">Click the button below to start your lab session</p>
                   <button
                     onClick={handleStartLab}
                     disabled={starting}
-                    className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50"
+                    className="px-6 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-all duration-200 disabled:opacity-50 border-glow-red"
                   >
                     {starting ? 'Starting...' : 'Start Lab Session'}
                   </button>
@@ -190,15 +190,15 @@ export default function LabSessionPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Lab Completed</h3>
-                  <p className="text-gray-600">Score: {session.score} points</p>
-                  <p className="text-gray-600">
+                  <h3 className="text-lg font-medium text-white mb-2">Lab Completed</h3>
+                  <p className="text-neutral-300">Score: {session.score} points</p>
+                  <p className="text-neutral-300">
                     Objectives Completed: {session.completedObjectives?.length || 0} / {objectives.length}
                   </p>
                 </div>
               ) : (
                 <div>
-                  <div className="bg-gray-900 rounded-lg overflow-hidden" style={{ height: '500px' }}>
+                  <div className="bg-zinc-900 rounded-lg overflow-hidden border border-zinc-700" style={{ height: '500px' }}>
                     {session.accessUrl ? (
                       <iframe
                         src={session.accessUrl}
@@ -208,15 +208,15 @@ export default function LabSessionPage() {
                     ) : (
                       <div className="flex items-center justify-center h-full text-white">
                         <div className="text-center">
-                          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+                          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
                           <p>Setting up lab environment...</p>
                         </div>
                       </div>
                     )}
                   </div>
-                  <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-                    <h4 className="font-medium text-blue-900 mb-2">Connection Instructions</h4>
-                    <p className="text-sm text-blue-800">
+                  <div className="mt-4 p-4 bg-zinc-900 border border-zinc-700 rounded-lg">
+                    <h4 className="font-medium text-white mb-2">Connection Instructions</h4>
+                    <p className="text-sm text-neutral-300">
                       Your lab environment is being prepared. Once ready, you'll be able to access it through the interface above.
                       Use the objectives checklist to track your progress.
                     </p>
@@ -229,23 +229,23 @@ export default function LabSessionPage() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Objectives */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Objectives</h2>
+            <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6">
+              <h2 className="text-xl font-bold text-white mb-4">Objectives</h2>
               <div className="space-y-3">
                 {objectives.map((objective) => (
-                  <div key={objective.id} className="border border-gray-200 rounded-lg p-3">
+                  <div key={objective.id} className="border border-zinc-700 rounded-lg p-3">
                     <label className="flex items-start cursor-pointer">
                       <input
                         type="checkbox"
                         checked={completedObjectives.includes(objective.id)}
                         onChange={() => toggleObjective(objective.id)}
                         disabled={!session || session.status !== 'RUNNING'}
-                        className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        className="mt-1 w-4 h-4 text-red-600 border-zinc-600 rounded focus:ring-red-500 bg-zinc-800"
                       />
                       <div className="ml-3 flex-1">
-                        <div className="font-medium text-gray-900">{objective.title}</div>
-                        <div className="text-sm text-gray-600 mt-1">{objective.description}</div>
-                        <div className="text-xs text-blue-600 mt-1">{objective.points} points</div>
+                        <div className="font-medium text-white">{objective.title}</div>
+                        <div className="text-sm text-neutral-400 mt-1">{objective.description}</div>
+                        <div className="text-xs text-red-400 mt-1">{objective.points} points</div>
                       </div>
                     </label>
                   </div>
@@ -255,12 +255,12 @@ export default function LabSessionPage() {
 
             {/* Hints */}
             {hints.length > 0 && (
-              <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6">
                 <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-bold text-gray-900">Hints</h2>
+                  <h2 className="text-xl font-bold text-white">Hints</h2>
                   <button
                     onClick={() => setShowHints(!showHints)}
-                    className="text-sm text-blue-600 hover:text-blue-700"
+                    className="text-sm text-red-400 hover:text-red-300"
                   >
                     {showHints ? 'Hide' : 'Show'}
                   </button>
@@ -268,9 +268,9 @@ export default function LabSessionPage() {
                 {showHints && (
                   <div className="space-y-3">
                     {hints.map((hint, index) => (
-                      <div key={index} className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                        <div className="text-sm font-medium text-yellow-900">Hint {hint.order}</div>
-                        <div className="text-sm text-yellow-800 mt-1">{hint.content}</div>
+                      <div key={index} className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg">
+                        <div className="text-sm font-medium text-yellow-400">Hint {hint.order}</div>
+                        <div className="text-sm text-neutral-300 mt-1">{hint.content}</div>
                       </div>
                     ))}
                   </div>
@@ -283,7 +283,7 @@ export default function LabSessionPage() {
               <button
                 onClick={handleCompleteLab}
                 disabled={completing}
-                className="w-full px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition disabled:opacity-50"
+                className="w-full px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-all duration-200 disabled:opacity-50"
               >
                 {completing ? 'Completing...' : 'Complete Lab'}
               </button>
@@ -291,6 +291,6 @@ export default function LabSessionPage() {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

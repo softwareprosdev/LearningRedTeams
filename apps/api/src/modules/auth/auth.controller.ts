@@ -2,16 +2,19 @@ import { Controller, Post, Get, Body, HttpCode, UseGuards } from '@nestjs/common
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUser } from './decorators/current-user.decorator';
+import { Public } from './decorators/public.decorator';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @Public()
   @Post('register')
   async register(@Body() body: any) {
     return this.authService.register(body);
   }
 
+  @Public()
   @Post('signup')
   @HttpCode(201)
   async signup(
@@ -37,6 +40,7 @@ export class AuthController {
     };
   }
 
+  @Public()
   @Post('login')
   @HttpCode(200)
   async login(@Body() body: { email: string; password: string }) {

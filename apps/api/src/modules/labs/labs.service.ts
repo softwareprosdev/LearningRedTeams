@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { GamificationService } from '../gamification/gamification.service';
 import { PointEventType } from '../gamification/dto/award-points.dto';
@@ -6,7 +11,10 @@ import { CreateLabDto, UpdateLabDto } from './dto';
 
 @Injectable()
 export class LabsService {
-  constructor(private prisma: PrismaService, private gamificationService: GamificationService) {}
+  constructor(
+    private prisma: PrismaService,
+    private gamificationService: GamificationService,
+  ) {}
 
   // ============================================================================
   // PUBLIC METHODS
@@ -160,7 +168,11 @@ export class LabsService {
       });
       // Award lab completion gamification points
       try {
-        await this.gamificationService.awardPointsForEvent(userId, PointEventType.LAB_COMPLETE, session.lab.lessonId);
+        await this.gamificationService.awardPointsForEvent(
+          userId,
+          PointEventType.LAB_COMPLETE,
+          session.lab.lessonId,
+        );
       } catch (err) {
         console.warn('Failed to award lab gamification:', err?.message || err);
       }

@@ -36,9 +36,7 @@ export class CertificatesService {
     }
 
     if (enrollment.progress < 100) {
-      throw new BadRequestException(
-        'You must complete the course before generating a certificate',
-      );
+      throw new BadRequestException('You must complete the course before generating a certificate');
     }
 
     // Check if certificate already exists
@@ -55,11 +53,7 @@ export class CertificatesService {
 
     // Generate unique certificate ID and verification hash
     const certificateId = this.generateCertificateId();
-    const verificationHash = this.generateVerificationHash(
-      userId,
-      courseId,
-      certificateId,
-    );
+    const verificationHash = this.generateVerificationHash(userId, courseId, certificateId);
 
     // Get user details
     const user = await this.prisma.user.findUnique({

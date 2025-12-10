@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
 
 export interface ApiResponse<T> {
   data?: T;
@@ -38,10 +38,7 @@ class ApiClient {
     return null;
   }
 
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<ApiResponse<T>> {
+  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
     const headersInit: HeadersInit = {
       'Content-Type': 'application/json',
     };
@@ -60,18 +57,23 @@ class ApiClient {
     }
 
     try {
-      const response = await fetch(`${API_URL}${endpoint}`, {
+      const fullUrl = `${API_URL}${endpoint}`;
+      console.log('Full request URL:', fullUrl);
+      const response = await fetch(fullUrl, {
         ...options,
         headers: mergedHeaders,
       });
 
+      console.log('Response status:', response.status);
       const data = await response.json();
+      console.log('Response data type:', typeof data, 'isArray:', Array.isArray(data));
 
       return {
         data,
         status: response.status,
       };
     } catch (error) {
+      console.error('Request failed:', error);
       return {
         error: error instanceof Error ? error.message : 'Unknown error',
         status: 0,
@@ -100,6 +102,8 @@ class ApiClient {
   }
 
   async getCourses(): Promise<ApiResponse<any>> {
+    console.log('API_URL:', API_URL);
+    console.log('Making request to:', `${API_URL}/courses`);
     return this.request('/courses', {
       method: 'GET',
     });
@@ -263,6 +267,19 @@ class ApiClient {
 
   async deleteChallenge(id: string): Promise<ApiResponse<any>> {
     return this.request(`/challenges/admin/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async put<T = any>(endpoint: string, body?: any): Promise<ApiResponse<T>> {
+    return this.request<T>(endpoint, {
+      method: 'PUT',
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  }
+
+  async delete<T = any>(endpoint: string): Promise<ApiResponse<T>> {
+    return this.request<T>(endpoint, {
       method: 'DELETE',
     });
   }

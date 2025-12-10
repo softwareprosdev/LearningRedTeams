@@ -53,6 +53,9 @@ describe('LessonsController (integration)', () => {
 
     expect(res.status).toBeGreaterThanOrEqual(200);
     expect(res.body).toEqual(expect.objectContaining({ score: 100, passed: true }));
-    expect(mockLessonsService.submitQuiz).toHaveBeenCalledWith('test-user', 'lesson-123', { q1: 'a', q2: 'b' });
+    expect(mockLessonsService.submitQuiz).toHaveBeenCalledWith('test-user', 'lesson-123', {
+      q1: 'a',
+      q2: 'b',
+    });
   });
 });

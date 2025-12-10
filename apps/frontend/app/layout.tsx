@@ -14,11 +14,13 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" className="bg-black">
+      <body className="bg-black text-white min-h-screen">
         <AuthProvider>
           <Navbar />
-          {children}
+          <main className="min-h-screen bg-black">
+            {children}
+          </main>
         </AuthProvider>
       </body>
     </html>

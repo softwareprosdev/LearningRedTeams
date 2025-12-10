@@ -73,10 +73,7 @@ export class CoursesController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.SUPER_ADMIN, Role.ORG_ADMIN, Role.INSTRUCTOR)
   @Put('admin/:id')
-  async update(
-    @Param('id') id: string,
-    @Body() updateCourseDto: UpdateCourseDto,
-  ) {
+  async update(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto) {
     return this.coursesService.update(id, updateCourseDto);
   }
 

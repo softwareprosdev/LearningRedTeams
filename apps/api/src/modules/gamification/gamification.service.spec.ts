@@ -19,10 +19,7 @@ describe('GamificationService', () => {
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        GamificationService,
-        { provide: PrismaService, useValue: prisma },
-      ],
+      providers: [GamificationService, { provide: PrismaService, useValue: prisma }],
     }).compile();
 
     service = module.get<GamificationService>(GamificationService);
@@ -53,9 +50,16 @@ describe('GamificationService', () => {
     ]);
 
     prisma.userAchievement.findUnique.mockResolvedValue(null);
-    prisma.userAchievement.upsert.mockResolvedValue({ achievement: { id: 'a1', name: 'First Steps' } });
+    prisma.userAchievement.upsert.mockResolvedValue({
+      achievement: { id: 'a1', name: 'First Steps' },
+    });
 
-    prisma.userStats.update.mockResolvedValue({ totalPoints: 10, level: 1, currentStreak: 1, lessonsCompleted: 1 });
+    prisma.userStats.update.mockResolvedValue({
+      totalPoints: 10,
+      level: 1,
+      currentStreak: 1,
+      lessonsCompleted: 1,
+    });
 
     const res = await service.awardPointsForEvent('u1', PointEventType.LESSON_COMPLETE);
 

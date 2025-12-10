@@ -20,10 +20,7 @@ export class CertificatesController {
   @Post('generate/:courseId')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.CREATED)
-  async generateCertificate(
-    @CurrentUser() user: any,
-    @Param('courseId') courseId: string,
-  ) {
+  async generateCertificate(@CurrentUser() user: any, @Param('courseId') courseId: string) {
     return this.certificatesService.generateCertificate(user.id, courseId);
   }
 
@@ -45,9 +42,6 @@ export class CertificatesController {
     @Param('certificateId') certificateId: string,
     @Query('hash') verificationHash: string,
   ) {
-    return this.certificatesService.verifyCertificate(
-      certificateId,
-      verificationHash,
-    );
+    return this.certificatesService.verifyCertificate(certificateId, verificationHash);
   }
 }

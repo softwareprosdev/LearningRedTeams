@@ -21,18 +21,12 @@ export class ProgressController {
 
   @Post('lessons/:lessonId/start')
   @HttpCode(HttpStatus.OK)
-  async startLesson(
-    @CurrentUser() user: any,
-    @Param('lessonId') lessonId: string,
-  ) {
+  async startLesson(@CurrentUser() user: any, @Param('lessonId') lessonId: string) {
     return this.progressService.startLesson(user.id, lessonId);
   }
 
   @Put('lessons/:lessonId/complete')
-  async completeLesson(
-    @CurrentUser() user: any,
-    @Param('lessonId') lessonId: string,
-  ) {
+  async completeLesson(@CurrentUser() user: any, @Param('lessonId') lessonId: string) {
     return this.progressService.completeLesson(user.id, lessonId);
   }
 
@@ -42,18 +36,11 @@ export class ProgressController {
     @Param('lessonId') lessonId: string,
     @Body() updateProgressDto: UpdateProgressDto,
   ) {
-    return this.progressService.updateProgress(
-      user.id,
-      lessonId,
-      updateProgressDto,
-    );
+    return this.progressService.updateProgress(user.id, lessonId, updateProgressDto);
   }
 
   @Get('courses/:courseId')
-  async getCourseProgress(
-    @CurrentUser() user: any,
-    @Param('courseId') courseId: string,
-  ) {
+  async getCourseProgress(@CurrentUser() user: any, @Param('courseId') courseId: string) {
     return this.progressService.getCourseProgress(user.id, courseId);
   }
 }
