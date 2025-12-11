@@ -37,7 +37,7 @@ export default function AdminDashboard() {
         totalStudents: 0, // Will be populated from analytics endpoint
         totalEnrollments: courses.reduce(
           (sum: number, c: any) => sum + (c._count?.enrollments || 0),
-          0
+          0,
         ),
       });
 
@@ -51,10 +51,138 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading dashboard...</p>
+      <div className="space-y-8">
+        {/* Page Header */}
+        <div>
+          <h1 className="text-4xl font-bold text-white">Admin Dashboard</h1>
+          <p className="mt-2 text-neutral-400">
+            Complete control over courses, users, and platform analytics
+          </p>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-zinc-900/50 border border-zinc-800/50 backdrop-blur-sm rounded-lg shadow-2xl shadow-red-950/20 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-neutral-400">Total Courses</p>
+                <p className="text-3xl font-bold text-white mt-2">{stats.totalCourses}</p>
+              </div>
+              <div className="bg-red-950/50 border border-red-900 rounded-xl p-3">
+                <span className="text-2xl">📚</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-zinc-900/50 border border-zinc-800/50 backdrop-blur-sm rounded-lg shadow-2xl shadow-red-950/20 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-neutral-400">Published</p>
+                <p className="text-3xl font-bold text-emerald-500 mt-2">{stats.publishedCourses}</p>
+              </div>
+              <div className="bg-emerald-950/50 border border-emerald-900 rounded-xl p-3">
+                <span className="text-2xl">✅</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-zinc-900/50 border border-zinc-800/50 backdrop-blur-sm rounded-lg shadow-2xl shadow-red-950/20 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-neutral-400">Total Students</p>
+                <p className="text-3xl font-bold text-white mt-2">{stats.totalStudents}</p>
+              </div>
+              <div className="bg-blue-950/50 border border-blue-900 rounded-xl p-3">
+                <span className="text-2xl">👥</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-zinc-900/50 border border-zinc-800/50 backdrop-blur-sm rounded-lg shadow-2xl shadow-red-950/20 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-neutral-400">Enrollments</p>
+                <p className="text-3xl font-bold text-white mt-2">{stats.totalEnrollments}</p>
+              </div>
+              <div className="bg-purple-950/50 border border-purple-900 rounded-xl p-3">
+                <span className="text-2xl">📈</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Courses */}
+        <div className="bg-zinc-900/50 border border-zinc-800/50 backdrop-blur-sm rounded-lg shadow-2xl shadow-red-950/20 overflow-hidden">
+          <div className="px-6 py-4 border-b border-zinc-800/50">
+            <h2 className="text-xl font-bold text-white">Recent Courses</h2>
+          </div>
+          <div className="divide-y divide-zinc-800/50">
+            {recentCourses.length > 0 ? (
+              recentCourses.map((course) => (
+                <div key={course.id} className="px-6 py-4 hover:bg-zinc-800/50 transition">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-white">{course.title}</h3>
+                      <p className="text-sm text-neutral-400 mt-1">
+                        {course.difficulty} • {course.category.replace('_', ' ')}
+                      </p>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <div className="text-right">
+                        <p className="text-sm text-neutral-400">
+                          {course._count?.enrollments || 0} students
+                        </p>
+                        <p className="text-sm text-neutral-400">
+                          {course._count?.modules || 0} modules
+                        </p>
+                      </div>
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          course.isPublished
+                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-600/30'
+                            : 'bg-yellow-500/20 text-yellow-400 border border-yellow-600/30'
+                        }`}
+                      >
+                        {course.isPublished ? 'Published' : 'Draft'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="px-6 py-8 text-center text-neutral-500">
+                No courses yet. Create your first course to get started!
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="bg-zinc-900/50 border border-zinc-800/50 backdrop-blur-sm rounded-lg shadow-2xl shadow-red-950/20 p-6">
+          <h2 className="text-xl font-bold text-white mb-6">Admin Actions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <a
+              href="/admin/courses/new"
+              className="flex items-center justify-center px-6 py-4 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition shadow-lg shadow-red-900/30"
+            >
+              <span className="mr-2">➕</span>
+              Create New Course
+            </a>
+            <a
+              href="/admin/courses"
+              className="flex items-center justify-center px-6 py-4 border-2 border-zinc-700 text-white rounded-lg font-semibold hover:border-red-500 hover:bg-red-950/20 transition"
+            >
+              <span className="mr-2">📚</span>
+              Manage Courses
+            </a>
+            <a
+              href="/admin/analytics"
+              className="flex items-center justify-center px-6 py-4 border-2 border-zinc-700 text-white rounded-lg font-semibold hover:border-red-500 hover:bg-red-950/20 transition"
+            >
+              <span className="mr-2">📊</span>
+              View Analytics
+            </a>
+          </div>
         </div>
       </div>
     );
@@ -77,8 +205,18 @@ export default function AdminDashboard() {
               <p className="text-3xl font-bold text-gray-900 mt-2">{stats.totalCourses}</p>
             </div>
             <div className="bg-blue-100 rounded-full p-3">
-              <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              <svg
+                className="w-8 h-8 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                />
               </svg>
             </div>
           </div>
@@ -91,8 +229,18 @@ export default function AdminDashboard() {
               <p className="text-3xl font-bold text-green-600 mt-2">{stats.publishedCourses}</p>
             </div>
             <div className="bg-green-100 rounded-full p-3">
-              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-8 h-8 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
           </div>
@@ -105,8 +253,18 @@ export default function AdminDashboard() {
               <p className="text-3xl font-bold text-gray-900 mt-2">{stats.totalStudents}</p>
             </div>
             <div className="bg-purple-100 rounded-full p-3">
-              <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              <svg
+                className="w-8 h-8 text-purple-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                />
               </svg>
             </div>
           </div>
@@ -119,8 +277,18 @@ export default function AdminDashboard() {
               <p className="text-3xl font-bold text-gray-900 mt-2">{stats.totalEnrollments}</p>
             </div>
             <div className="bg-indigo-100 rounded-full p-3">
-              <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              <svg
+                className="w-8 h-8 text-indigo-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                />
               </svg>
             </div>
           </div>
@@ -148,9 +316,7 @@ export default function AdminDashboard() {
                       <p className="text-sm text-gray-600">
                         {course._count?.enrollments || 0} students
                       </p>
-                      <p className="text-sm text-gray-600">
-                        {course._count?.modules || 0} modules
-                      </p>
+                      <p className="text-sm text-gray-600">{course._count?.modules || 0} modules</p>
                     </div>
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-medium ${
@@ -182,7 +348,12 @@ export default function AdminDashboard() {
             className="flex items-center justify-center px-6 py-4 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
             </svg>
             Create New Course
           </a>
@@ -191,7 +362,12 @@ export default function AdminDashboard() {
             className="flex items-center justify-center px-6 py-4 border-2 border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition"
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 10h16M4 14h16M4 18h16"
+              />
             </svg>
             Manage Courses
           </a>
@@ -200,7 +376,12 @@ export default function AdminDashboard() {
             className="flex items-center justify-center px-6 py-4 border-2 border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition"
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+              />
             </svg>
             View Analytics
           </a>
