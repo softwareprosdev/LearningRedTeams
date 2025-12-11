@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { apiClient } from '@/lib/api-client';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface Course {
   id: string;
@@ -261,9 +262,11 @@ export default function CoursesPage() {
                           {/* Course Image */}
                           <div className="relative h-48 bg-zinc-900 overflow-hidden">
                             {course.thumbnail ? (
-                              <img
+                              <Image
                                 src={course.thumbnail}
                                 alt={course.title}
+                                width={500}
+                                height={192}
                                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                               />
                             ) : (

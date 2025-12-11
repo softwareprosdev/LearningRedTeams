@@ -36,7 +36,6 @@ async function bootstrap() {
   try {
     const server: any = app.getHttpAdapter().getInstance();
     const rootPath = '/';
-    const apiPrefix = `/${process.env.API_PREFIX || 'api/v1'}`;
     server.get(rootPath, (req: any, res: any) => {
       // Prefer docs if available
       return res.redirect('/api/docs');

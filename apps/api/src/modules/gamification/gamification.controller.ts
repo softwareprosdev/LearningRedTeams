@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards, Query, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Query } from '@nestjs/common';
 import { GamificationService } from './gamification.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
@@ -56,7 +56,7 @@ export class GamificationController {
 
   @Post('seed-achievements')
   @UseGuards(JwtAuthGuard)
-  async seedAchievements(@CurrentUser() user: any) {
+  async seedAchievements() {
     // TODO: Add admin role check
     // if (user.role !== 'SUPER_ADMIN') {
     //   throw new ForbiddenException('Only admins can seed achievements');

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { apiClient } from '@/lib/api-client';
 import Link from 'next/link';
 
@@ -28,25 +28,7 @@ export default function StudentAnalyticsPage() {
     fetchStudents();
   }, []);
 
-  useEffect(() => {
-    filterAndSortStudents();
-  }, [students, searchTerm, sortBy, sortOrder]);
-
-  const fetchStudents = async () => {
-    try {
-      setLoading(true);
-      const response = await apiClient.get('/api/v1/analytics/students');
-      if (response.data) {
-        setStudents(response.data);
-      }
-    } catch (error) {
-      console.error('Failed to fetch students:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filterAndSortStudents = () => {
+  const filterAndSortStudents = useCallback(() => {
     let filtered = [...students];
 
     // Apply search filter
@@ -82,7 +64,25 @@ export default function StudentAnalyticsPage() {
     });
 
     setFilteredStudents(filtered);
+  }, [students, searchTerm, sortBy, sortOrder]);
+
+  const fetchStudents = async () => {
+    try {
+      setLoading(true);
+      const response = await apiClient.get('/api/v1/analytics/students');
+      if (response.data) {
+        setStudents(response.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch students:', error);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    filterAndSortStudents();
+  }, [filterAndSortStudents]);
 
   const handleSort = (field: 'name' | 'enrollments' | 'completed' | 'progress') => {
     if (sortBy === field) {

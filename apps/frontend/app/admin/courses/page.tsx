@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { apiClient } from '@/lib/api-client';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function AdminCoursesPage() {
   const [courses, setCourses] = useState<any[]>([]);
@@ -132,11 +133,13 @@ export default function AdminCoursesPage() {
           {filteredCourses.map((course) => (
             <div key={course.id} className="bg-white rounded-lg shadow-md overflow-hidden">
               {/* Course Image */}
-              <div className="h-48 bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+              <div className="h-48 bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center overflow-hidden">
                 {course.thumbnail ? (
-                  <img
+                  <Image
                     src={course.thumbnail}
                     alt={course.title}
+                    width={500}
+                    height={192}
                     className="w-full h-full object-cover"
                   />
                 ) : (

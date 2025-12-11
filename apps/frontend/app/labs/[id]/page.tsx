@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { apiClient } from '@/lib/api-client';
 
@@ -29,9 +29,22 @@ export default function LabSessionPage() {
   const [showHints, setShowHints] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState<string>('');
 
+  const loadLab = useCallback(async () => {
+    try {
+      const response = await apiClient.getLab(labId);
+      if (response.status === 200) {
+        setLab(response.data);
+      }
+    } catch (error) {
+      console.error('Failed to load lab:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [labId]);
+
   useEffect(() => {
     loadLab();
-  }, [labId]);
+  }, [labId, loadLab]);
 
   useEffect(() => {
     if (session?.status === 'RUNNING' && session?.expiresAt) {
@@ -54,19 +67,6 @@ export default function LabSessionPage() {
       return () => clearInterval(timer);
     }
   }, [session]);
-
-  const loadLab = async () => {
-    try {
-      const response = await apiClient.getLab(labId);
-      if (response.status === 200) {
-        setLab(response.data);
-      }
-    } catch (error) {
-      console.error('Failed to load lab:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleStartLab = async () => {
     setStarting(true);
@@ -217,7 +217,7 @@ export default function LabSessionPage() {
                   <div className="mt-4 p-4 bg-zinc-900 border border-zinc-700 rounded-lg">
                     <h4 className="font-medium text-white mb-2">Connection Instructions</h4>
                     <p className="text-sm text-neutral-300">
-                      Your lab environment is being prepared. Once ready, you'll be able to access it through the interface above.
+                      Your lab environment is being prepared. Once ready, you&apos;ll be able to access it through the interface above.
                       Use the objectives checklist to track your progress.
                     </p>
                   </div>

@@ -1,5 +1,4 @@
-import { IsString, IsInt, Min, IsJSON, IsOptional, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsString, IsInt, Min, IsJSON, IsOptional } from 'class-validator';
 
 export class CreateLabDto {
   @IsString()

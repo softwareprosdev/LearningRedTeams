@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import ProgressBar from './ProgressBar';
 
 interface Course {
@@ -90,10 +91,12 @@ export default function CourseProgressCard({ enrollment }: CourseProgressCardPro
         <div className="cursor-pointer">
           {/* Thumbnail */}
           {course.thumbnail ? (
-            <div className="relative h-48 w-full bg-gradient-to-br from-blue-500 to-indigo-600">
-              <img
+            <div className="relative h-48 w-full bg-gradient-to-br from-blue-500 to-indigo-600 overflow-hidden">
+              <Image
                 src={course.thumbnail}
                 alt={course.title}
+                width={400}
+                height={192}
                 className="w-full h-full object-cover"
               />
             </div>

@@ -1,4 +1,4 @@
-import { IsString, IsEnum, IsInt, Min, IsOptional, IsArray, IsBoolean } from 'class-validator';
+import { IsString, IsEnum, IsInt, Min, IsOptional, IsBoolean } from 'class-validator';
 
 export enum LessonType {
   VIDEO = 'VIDEO',

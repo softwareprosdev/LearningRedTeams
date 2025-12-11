@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AwardPointsDto, PointEventType } from './dto';
 import { AchievementType } from '@zdi/database';
@@ -119,7 +119,7 @@ export class GamificationService {
   // ============================================================================
 
   async awardPoints(dto: AwardPointsDto) {
-    const { userId, points, eventType, metadata } = dto;
+    const { userId, points, eventType } = dto;
 
     // Get or create user stats
     const stats = await this.getOrCreateUserStats(userId);

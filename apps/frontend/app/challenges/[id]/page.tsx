@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/lib/auth-context';
@@ -18,13 +18,7 @@ export default function ChallengeDetailPage() {
   const [result, setResult] = useState<any | null>(null);
   const [submissions, setSubmissions] = useState<any[]>([]);
 
-  useEffect(() => {
-    if (!id) return;
-    fetchChallenge();
-    if (isAuthenticated) fetchSubmissions();
-  }, [id, isAuthenticated]);
-
-  const fetchChallenge = async () => {
+  const fetchChallenge = useCallback(async () => {
     try {
       setLoading(true);
       const res = await apiClient.getChallenge(id);
@@ -36,16 +30,22 @@ export default function ChallengeDetailPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
-  const fetchSubmissions = async () => {
+  const fetchSubmissions = useCallback(async () => {
     try {
       const res = await apiClient.getUserChallengeSubmissions(id);
       if (res.status === 200 && Array.isArray(res.data)) setSubmissions(res.data);
     } catch (err) {
       // ignore
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    if (!id) return;
+    fetchChallenge();
+    if (isAuthenticated) fetchSubmissions();
+  }, [id, isAuthenticated, fetchChallenge, fetchSubmissions]);
 
   const handleSubmitFlag = async () => {
     if (!isAuthenticated) return setError('You must be logged in to submit flags');

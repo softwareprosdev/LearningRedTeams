@@ -96,6 +96,7 @@ export class ChallengesService {
     }
 
     // Don't expose the flag in the response
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { flag, ...challengeWithoutFlag } = challenge;
 
     return challengeWithoutFlag;
@@ -136,7 +137,7 @@ export class ChallengesService {
     const points = isCorrect ? challenge.points : 0;
 
     // Create submission
-    const submission = await this.prisma.submission.create({
+    await this.prisma.submission.create({
       data: {
         userId,
         challengeId,

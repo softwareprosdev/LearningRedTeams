@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { apiClient } from '@/lib/api-client';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface OverviewStats {
   totalStudents: number;
@@ -257,9 +258,11 @@ export default function AnalyticsPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4 flex-1">
                     {course.thumbnail && (
-                      <img
+                      <Image
                         src={course.thumbnail}
                         alt={course.title}
+                        width={64}
+                        height={64}
                         className="w-16 h-16 object-cover rounded"
                       />
                     )}

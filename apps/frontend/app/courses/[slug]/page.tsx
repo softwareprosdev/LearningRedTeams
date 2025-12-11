@@ -319,7 +319,7 @@ export default function CourseDetailPage() {
             {course.learningOutcomes && course.learningOutcomes.length > 0 && (
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                  What You'll Learn
+                  What You&apos;ll Learn
                 </h2>
                 <ul className="space-y-2">
                   {course.learningOutcomes.map((outcome, index) => (
