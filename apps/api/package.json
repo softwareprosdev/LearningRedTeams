@@ -4,7 +4,7 @@
   "private": true,
   "description": "ZeroDayInstitute.com NestJS Backend API",
   "scripts": {
-    "dev": "PORT=3001 nest start --watch",
+    "dev": "nest start --watch",
     "build": "nest build",
     "start": "node dist/main",
     "start:prod": "node dist/main",

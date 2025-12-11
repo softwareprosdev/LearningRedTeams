@@ -37,6 +37,12 @@ export class CoursesController {
   }
 
   @Public()
+  @Get('slug/:slug')
+  async findBySlug(@Param('slug') slug: string) {
+    return this.coursesService.findBySlug(slug);
+  }
+
+  @Public()
   @Get(':id')
   async findById(@Param('id') id: string) {
     return this.coursesService.findById(id);

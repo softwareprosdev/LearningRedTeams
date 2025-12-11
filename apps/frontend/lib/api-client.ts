@@ -115,6 +115,12 @@ class ApiClient {
     });
   }
 
+  async getCourseBySlug(slug: string): Promise<ApiResponse<any>> {
+    return this.request(`/courses/slug/${slug}`, {
+      method: 'GET',
+    });
+  }
+
   async enrollCourse(courseId: string): Promise<ApiResponse<any>> {
     return this.request(`/enrollments/courses/${courseId}`, {
       method: 'POST',

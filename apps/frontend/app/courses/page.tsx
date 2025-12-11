@@ -75,22 +75,25 @@ export default function CoursesPage() {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        console.log('Starting fetchCourses...');
+        console.log('🚀 Starting fetchCourses...');
+        console.log('📍 API URL:', process.env.NEXT_PUBLIC_API_URL);
         const response = await apiClient.getCourses();
-        console.log('API response received:', response);
+        console.log('📦 API response received:', response);
 
         if (response.status === 200 && response.data) {
           const coursesData = Array.isArray(response.data) ? response.data : [];
-          console.log('Setting courses:', coursesData.length);
+          console.log('✅ Setting courses:', coursesData.length, 'courses');
+          console.log('📚 First course:', coursesData[0]);
           setCourses(coursesData);
         } else {
-          console.log('API failed:', response.status, response.data);
-          setError('Failed to load courses');
+          console.log('❌ API failed:', response.status, response.data);
+          setError(`Failed to load courses (Status: ${response.status})`);
         }
       } catch (err) {
-        console.error('Error in fetchCourses:', err);
-        setError('Error loading courses');
+        console.error('💥 Error in fetchCourses:', err);
+        setError(`Error loading courses: ${err instanceof Error ? err.message : 'Unknown error'}`);
       } finally {
+        console.log('🏁 Finished loading, isLoading set to false');
         setIsLoading(false);
       }
     };
@@ -159,19 +162,19 @@ export default function CoursesPage() {
       </section>
 
       {/* Filters Section */}
-      <section className="py-8 border-b border-zinc-800/50">
+      <section className="py-12 border-b border-zinc-800/50 bg-zinc-950/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col sm:flex-row gap-6">
             <div className="flex-1">
-              <label className="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-2">
-                Category
+              <label className="block text-sm font-semibold text-red-400 uppercase tracking-wider mb-3">
+                Filter by Category
               </label>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-4 py-2.5 bg-zinc-900/50 border border-zinc-800 rounded-lg focus:ring-2 focus:ring-red-500/50 focus:border-red-500/50 text-white transition-all duration-200 hover:bg-zinc-900 cursor-pointer"
+                className="w-full px-6 py-4 text-lg bg-zinc-900/80 border-2 border-zinc-700 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 text-white transition-all duration-200 hover:bg-zinc-900 hover:border-red-600 cursor-pointer font-medium shadow-lg"
               >
-                <option value="all">All Categories</option>
+                <option value="all">🎯 All Categories</option>
                 {Object.entries(categoryConfig).map(([key, config]) => (
                   <option key={key} value={key}>
                     {config.icon} {config.label}
@@ -181,19 +184,19 @@ export default function CoursesPage() {
             </div>
 
             <div className="flex-1">
-              <label className="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-2">
-                Difficulty
+              <label className="block text-sm font-semibold text-red-400 uppercase tracking-wider mb-3">
+                Filter by Difficulty
               </label>
               <select
                 value={selectedDifficulty}
                 onChange={(e) => setSelectedDifficulty(e.target.value)}
-                className="w-full px-4 py-2.5 bg-zinc-900/50 border border-zinc-800 rounded-lg focus:ring-2 focus:ring-red-500/50 focus:border-red-500/50 text-white transition-all duration-200 hover:bg-zinc-900 cursor-pointer"
+                className="w-full px-6 py-4 text-lg bg-zinc-900/80 border-2 border-zinc-700 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 text-white transition-all duration-200 hover:bg-zinc-900 hover:border-red-600 cursor-pointer font-medium shadow-lg"
               >
-                <option value="all">All Levels</option>
-                <option value="BEGINNER">Beginner</option>
-                <option value="INTERMEDIATE">Intermediate</option>
-                <option value="ADVANCED">Advanced</option>
-                <option value="EXPERT">Expert</option>
+                <option value="all">📊 All Levels</option>
+                <option value="BEGINNER">🟢 Beginner</option>
+                <option value="INTERMEDIATE">🔵 Intermediate</option>
+                <option value="ADVANCED">🟠 Advanced</option>
+                <option value="EXPERT">🔴 Expert</option>
               </select>
             </div>
           </div>

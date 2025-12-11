@@ -22,14 +22,19 @@
     "db:push": "pnpm --filter @zdi/database db:push",
     "db:migrate": "pnpm --filter @zdi/database db:migrate",
     "db:studio": "pnpm --filter @zdi/database db:studio",
-    "db:seed": "pnpm --filter @zdi/database db:seed"
+    "db:seed": "pnpm --filter @zdi/database db:seed",
+    "seed:courses": "node --experimental-strip-types --no-warnings scripts/seed-realworld-courses.ts",
+    "seed:content": "node --experimental-strip-types --no-warnings scripts/seed-course-content.ts"
   },
   "devDependencies": {
+    "@prisma/client": "^5.9.1",
     "@turbo/gen": "^1.12.4",
-    "turbo": "^1.12.4",
+    "@types/bcrypt": "^6.0.0",
+    "bcrypt": "^6.0.0",
+    "concurrently": "^9.1.0",
     "prettier": "^3.2.5",
-    "typescript": "^5.3.3",
-    "concurrently": "^9.1.0"
+    "turbo": "^1.12.4",
+    "typescript": "^5.3.3"
   },
   "workspaces": [
     "apps/*",

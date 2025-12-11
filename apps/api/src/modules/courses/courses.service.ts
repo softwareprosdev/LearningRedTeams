@@ -461,7 +461,7 @@ export class CoursesService {
     }
 
     try {
-      return await this.prisma.course.findUnique({
+      const course = await this.prisma.course.findUnique({
         where: { slug },
         include: {
           modules: {
@@ -477,6 +477,21 @@ export class CoursesService {
           },
         },
       });
+
+      if (course) {
+        return course;
+      }
+
+      // If no course found in database, try to find in mock data
+      const mockCourse = this.getMockCourses().find((course) => course.slug === slug);
+      if (mockCourse) {
+        return {
+          ...mockCourse,
+          modules: [],
+          mitreMappings: [],
+        };
+      }
+      return null;
     } catch (error) {
       // If database query fails, try to find in mock data
       const mockCourse = this.getMockCourses().find((course) => course.slug === slug);
