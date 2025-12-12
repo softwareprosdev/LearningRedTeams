@@ -15,13 +15,13 @@ export class PaymentsService {
     this.lemonSqueezyWebhookSecret = this.config.get('LEMON_SQUEEZY_WEBHOOK_SECRET');
   }
 
-  async createCheckoutSession(userId: string, priceId: string) {
+  async createCheckoutSession(_userId: string, _priceId: string) {
     // TODO: Implement Lemon Squeezy checkout creation
     // This would create a checkout URL for the user to pay
     throw new BadRequestException('Payment integration in progress');
   }
 
-  async handleWebhook(payload: any, signature: string) {
+  async handleWebhook(_payload: any, _signature: string) {
     // TODO: Verify webhook signature and process subscription events
     // Handle subscription_created, subscription_updated, subscription_cancelled
     throw new BadRequestException('Webhook handling in progress');
@@ -33,7 +33,7 @@ export class PaymentsService {
     });
   }
 
-  async cancelSubscription(subscriptionId: string) {
+  async cancelSubscription(_subscriptionId: string) {
     // TODO: Cancel subscription via Lemon Squeezy API
     throw new BadRequestException('Subscription cancellation in progress');
   }
