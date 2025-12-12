@@ -16,12 +16,7 @@ interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  signup: (
-    email: string,
-    password: string,
-    firstName: string,
-    lastName: string
-  ) => Promise<void>;
+  signup: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -34,6 +29,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Check if user is logged in on mount
   useEffect(() => {
     const checkAuth = async () => {
+      if (typeof window === 'undefined') {
+        setIsLoading(false);
+        return;
+      }
       const token = localStorage.getItem('accessToken');
       if (token) {
         try {
@@ -41,12 +40,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (response.status === 200 && response.data) {
             setUser(response.data);
           } else {
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
+            if (typeof window !== 'undefined') {
+              localStorage.removeItem('accessToken');
+              localStorage.removeItem('refreshToken');
+            }
           }
         } catch (error) {
           console.error('Auth check failed:', error);
-          localStorage.removeItem('accessToken');
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('accessToken');
+          }
         }
       }
       setIsLoading(false);
@@ -61,8 +64,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const response = await apiClient.login({ email, password });
       if (response.status === 200 && response.data) {
         const loginData = response.data as LoginResponse;
-        localStorage.setItem('accessToken', loginData.accessToken);
-        localStorage.setItem('refreshToken', loginData.refreshToken);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('accessToken', loginData.accessToken);
+          localStorage.setItem('refreshToken', loginData.refreshToken);
+        }
         setUser(loginData.user);
       } else {
         throw new Error(response.error || 'Login failed');
@@ -72,12 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signup = async (
-    email: string,
-    password: string,
-    firstName: string,
-    lastName: string
-  ) => {
+  const signup = async (email: string, password: string, firstName: string, lastName: string) => {
     setIsLoading(true);
     try {
       const response = await apiClient.signup({
@@ -88,8 +88,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
       if (response.status === 201 && response.data) {
         const loginData = response.data as LoginResponse;
-        localStorage.setItem('accessToken', loginData.accessToken);
-        localStorage.setItem('refreshToken', loginData.refreshToken);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('accessToken', loginData.accessToken);
+          localStorage.setItem('refreshToken', loginData.refreshToken);
+        }
         setUser(loginData.user);
       } else {
         throw new Error(response.error || 'Signup failed');

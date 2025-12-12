@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+
+export const dynamic = 'force-dynamic';
 import { apiClient } from '@/lib/api-client';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -237,9 +239,7 @@ export default function AnalyticsPage() {
             );
           })}
         </div>
-        <div className="mt-4 text-xs text-gray-500 text-center">
-          Hover over bars to see details
-        </div>
+        <div className="mt-4 text-xs text-gray-500 text-center">Hover over bars to see details</div>
       </div>
 
       {/* Popular Courses */}
