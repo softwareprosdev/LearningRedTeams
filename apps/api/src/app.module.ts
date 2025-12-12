@@ -15,6 +15,7 @@ import { LabsModule } from './modules/labs/labs.module';
 import { ChallengesModule } from './modules/challenges/challenges.module';
 import { ProgressModule } from './modules/progress/progress.module';
 import { CertificatesModule } from './modules/certificates/certificates.module';
+import { PaymentsModule } from './modules/payments/payments.module';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 
 @Module({
@@ -37,6 +38,7 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
     GamificationModule,
     LabsModule,
     ChallengesModule,
+    PaymentsModule,
   ],
   providers: [
     {
