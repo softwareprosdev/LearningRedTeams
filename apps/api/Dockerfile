@@ -42,7 +42,7 @@ fi
 RUN if [ -f /app/node_modules/@zdi/database/package.json ]; then \
 	node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('/app/node_modules/@zdi/database/package.json','utf8'));p.main='index.js';fs.writeFileSync('/app/node_modules/@zdi/database/package.json',JSON.stringify(p,null,2));" || true; \
 fi
-ENV DATABASE_URL="postgresql://postgres:postgres@localhost:5432/zeroday_institute"
+ENV DATABASE_URL="postgres://postgres:IOijEjIbIn0RB5dJLqPYI6Ztpz5HpQMH4ApgTaVXod06VHoTSAqX712S28vKphWS@kk8wc0cow088k88cooscs08g:5432/postgres"
 RUN pnpm --filter @zdi/database run db:generate || true
 # If a generated Prisma client is not available at build time, we expect a local
 # stub file to exist at `packages/database/dist/index.js`. Previously we tried

@@ -37,7 +37,7 @@ if [ ! -f "$default_js" ] || grep -q "did not initialize yet" "$default_js"; the
 	mkdir -p /app/node_modules/@zdi/database/dist; \
 	printf "%s\n" "class PrismaClientStub {" "  constructor(){console.warn(\"Using PrismaClient stub (no real DB).\")}" "  async $connect(){return Promise.resolve()}" "  async $disconnect(){return Promise.resolve()}" "}" "const prisma=new PrismaClientStub();" "module.exports={PrismaClient:PrismaClientStub,Prisma:{},prisma};" > /app/node_modules/@zdi/database/dist/index.js; \
 fi'
-ENV DATABASE_URL="postgresql://postgres:postgres@localhost:5432/zeroday_institute"
+ENV DATABASE_URL="postgres://postgres:IOijEjIbIn0RB5dJLqPYI6Ztpz5HpQMH4ApgTaVXod06VHoTSAqX712S28vKphWS@kk8wc0cow088k88cooscs08g:5432/postgres"
 WORKDIR /app/apps/frontend
 RUN pnpm build
 
