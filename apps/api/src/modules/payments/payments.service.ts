@@ -4,13 +4,16 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class PaymentsService {
+  private readonly lemonSqueezyApiKey: string;
+  private readonly lemonSqueezyWebhookSecret: string;
+
   constructor(
     private config: ConfigService,
     private prisma: PrismaService,
-  ) {}
-
-  private readonly lemonSqueezyApiKey = this.config.get('LEMON_SQUEEZY_API_KEY');
-  private readonly lemonSqueezyWebhookSecret = this.config.get('LEMON_SQUEEZY_WEBHOOK_SECRET');
+  ) {
+    this.lemonSqueezyApiKey = this.config.get('LEMON_SQUEEZY_API_KEY');
+    this.lemonSqueezyWebhookSecret = this.config.get('LEMON_SQUEEZY_WEBHOOK_SECRET');
+  }
 
   async createCheckoutSession(userId: string, priceId: string) {
     // TODO: Implement Lemon Squeezy checkout creation
@@ -26,7 +29,7 @@ export class PaymentsService {
 
   async getSubscription(userId: string) {
     return this.prisma.subscription.findFirst({
-      where: { userId },
+      where: { user: { id: userId } },
     });
   }
 

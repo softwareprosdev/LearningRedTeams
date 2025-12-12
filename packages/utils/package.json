@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc index.ts --outDir dist --module commonjs --target ES2022 --esModuleInterop --declaration true --declarationMap false --sourceMap false || true"
+    "build": "tsc index.ts --outDir dist --module commonjs --target ES2022 --esModuleInterop --declaration true --declarationMap false --sourceMap false --skipLibCheck || true"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

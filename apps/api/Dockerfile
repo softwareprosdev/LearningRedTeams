@@ -6,9 +6,11 @@ WORKDIR /app
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY packages ./packages
 COPY apps/api/package.json ./apps/api/
+COPY apps/frontend/package.json ./apps/frontend/
 RUN pnpm install --frozen-lockfile --shamefully-hoist
 
 FROM base AS build
+RUN npm install -g @nestjs/cli
 WORKDIR /app
 # Copy node_modules and workspace packages; also ensure root workspace files are present for pnpm -w
 COPY --from=dependencies /app/node_modules ./node_modules
@@ -18,6 +20,7 @@ COPY --from=dependencies /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
 COPY --from=dependencies /app/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY apps/api ./apps/api
 COPY turbo.json ./
+COPY tsconfig.json ./
 # Build workspace packages from workspace root, then build the API app
 WORKDIR /app
 RUN pnpm -w -r run build

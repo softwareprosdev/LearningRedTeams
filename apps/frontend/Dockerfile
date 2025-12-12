@@ -6,17 +6,20 @@ WORKDIR /app
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY packages ./packages
 COPY apps/frontend/package.json ./apps/frontend/
+COPY apps/api/package.json ./apps/api/
 RUN pnpm install --frozen-lockfile --shamefully-hoist
 
 FROM base AS build
 WORKDIR /app
 COPY --from=dependencies /app/node_modules ./node_modules
+COPY --from=dependencies /app/apps/frontend/node_modules ./apps/frontend/node_modules
 COPY --from=dependencies /app/packages ./packages
 COPY --from=dependencies /app/package.json ./package.json
 COPY --from=dependencies /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
 COPY --from=dependencies /app/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY apps/frontend ./apps/frontend
 COPY turbo.json ./
+COPY tsconfig.json ./
 WORKDIR /app
 # Build workspace packages (if any) from workspace root, then build frontend
 RUN pnpm -w -r run build || true
