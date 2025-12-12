@@ -1,0 +1,26 @@
+{
+  "timestamp": "2025-12-12T09:14:20.947Z",
+  "summary": {
+    "totalIssues": 1,
+    "byCategory": {
+      "bug": 0,
+      "security": 0,
+      "style": 1,
+      "performance": 0
+    },
+    "bySeverity": {
+      "low": 0,
+      "medium": 1,
+      "high": 0,
+      "critical": 0
+    }
+  },
+  "issues": [
+    {
+      "category": "style",
+      "severity": "medium",
+      "message": "Linting issues found. Run \"pnpm lint\" for details.",
+      "remediation": "Run \"pnpm lint --fix\" to automatically resolve style issues."
+    }
+  ]
+}

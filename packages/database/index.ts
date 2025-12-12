@@ -1,5 +1,5 @@
 export * from '@prisma/client';
-export { PrismaClient } from '@prisma/client';
+export { PrismaClient, AchievementType } from '@prisma/client';
 
 // Re-export commonly used types
 import type { Prisma } from '@prisma/client';
