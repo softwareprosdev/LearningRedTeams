@@ -1,6 +1,7 @@
-FROM node:18-bullseye-slim AS base
+FROM node:20-bullseye-slim AS base
 RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
-RUN npm install -g pnpm@8.15.1
+RUN npm install -g npm@latest
+RUN npm install -g pnpm@latest
 
 FROM base AS dependencies
 WORKDIR /app

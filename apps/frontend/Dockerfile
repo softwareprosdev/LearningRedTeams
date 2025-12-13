@@ -1,6 +1,7 @@
-FROM node:18-alpine AS base
+FROM node:20-alpine AS base
 RUN apk add --no-cache libc6-compat openssl
-RUN npm install -g pnpm@8.15.1
+RUN npm install -g npm@latest
+RUN npm install -g pnpm@latest
 
 FROM base AS dependencies
 WORKDIR /app
@@ -32,7 +33,7 @@ RUN pnpm --filter @zdi/database run db:generate || true
 # Build frontend - run from workspace root with filter
 ENV DATABASE_URL="postgres://stub:stub@localhost:5432/stub"
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN cd /app && pnpm --filter @zdi/frontend run build
+RUN pnpm --filter @zdi/frontend run build
 
 FROM base AS production
 WORKDIR /app
