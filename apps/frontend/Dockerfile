@@ -7,12 +7,11 @@ COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY packages ./packages
 COPY apps/frontend/package.json ./apps/frontend/
 COPY apps/api/package.json ./apps/api/
-RUN pnpm install --frozen-lockfile --shamefully-hoist
+RUN pnpm install --frozen-lockfile
 
 FROM base AS build
 WORKDIR /app
 COPY --from=dependencies /app/node_modules ./node_modules
-COPY --from=dependencies /app/apps/frontend/node_modules ./apps/frontend/node_modules
 COPY --from=dependencies /app/packages ./packages
 COPY --from=dependencies /app/package.json ./package.json
 COPY --from=dependencies /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
@@ -20,33 +19,33 @@ COPY --from=dependencies /app/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY apps/frontend ./apps/frontend
 COPY turbo.json ./
 COPY tsconfig.json ./
-WORKDIR /app
-# Build workspace packages (if any) from workspace root, then build frontend
-RUN pnpm -w -r run build || true
-# Ensure compiled workspace packages are available under node_modules for runtime
-RUN mkdir -p /app/node_modules/@zdi \
-	&& for p in config database types utils; do \
-		mkdir -p /app/node_modules/@zdi/$p; \
-		if [ -d "packages/$p/dist" ]; then cp -r "packages/$p/dist" "/app/node_modules/@zdi/$p/dist" || true; fi; \
-		if [ -f "packages/$p/package.json" ]; then cp "packages/$p/package.json" "/app/node_modules/@zdi/$p/package.json" || true; fi; \
-	done
+
+# Build workspace packages first
+RUN pnpm --filter @zdi/config run build || true
+RUN pnpm --filter @zdi/types run build || true
+RUN pnpm --filter @zdi/utils run build || true
+
+# Generate Prisma client
 RUN pnpm --filter @zdi/database run db:generate || true
-RUN sh -lc 'default_js="/app/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/.prisma/client/default.js"; \
-if [ ! -f "$default_js" ] || grep -q "did not initialize yet" "$default_js"; then \
-	echo "Prisma client missing or placeholder; writing stub for @zdi/database"; \
-	mkdir -p /app/node_modules/@zdi/database/dist; \
-	printf "%s\n" "class PrismaClientStub {" "  constructor(){console.warn(\"Using PrismaClient stub (no real DB).\")}" "  async $connect(){return Promise.resolve()}" "  async $disconnect(){return Promise.resolve()}" "}" "const prisma=new PrismaClientStub();" "module.exports={PrismaClient:PrismaClientStub,Prisma:{},prisma};" > /app/node_modules/@zdi/database/dist/index.js; \
-fi'
-ENV DATABASE_URL="postgres://postgres:IOijEjIbIn0RB5dJLqPYI6Ztpz5HpQMH4ApgTaVXod06VHoTSAqX712S28vKphWS@kk8wc0cow088k88cooscs08g:5432/postgres"
-WORKDIR /app/apps/frontend
-RUN pnpm build
+
+# Build frontend from workspace root
+ENV DATABASE_URL="postgres://stub:stub@localhost:5432/stub"
+RUN pnpm --filter @zdi/frontend run build
 
 FROM base AS production
 WORKDIR /app
 ENV NODE_ENV=production
-COPY --from=build /app/apps/frontend/.next ./.next
-COPY --from=build /app/apps/frontend/public ./public
-COPY --from=build /app/apps/frontend/package.json ./package.json
+
+# Copy built frontend
+COPY --from=build /app/apps/frontend/.next ./apps/frontend/.next
+COPY --from=build /app/apps/frontend/public ./apps/frontend/public
+COPY --from=build /app/apps/frontend/package.json ./apps/frontend/package.json
+
+# Copy workspace files
+COPY --from=build /app/package.json ./package.json
+COPY --from=build /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
 COPY --from=build /app/node_modules ./node_modules
+
+WORKDIR /app/apps/frontend
 EXPOSE 3000
-CMD ["pnpm", "start"]
+CMD ["node_modules/.bin/next", "start"]
