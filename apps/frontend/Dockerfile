@@ -8,7 +8,7 @@ COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY packages ./packages
 COPY apps/frontend/package.json ./apps/frontend/
 COPY apps/api/package.json ./apps/api/
-RUN pnpm install --frozen-lockfile --shamefully-hoist
+RUN pnpm install --no-frozen-lockfile --shamefully-hoist
 
 FROM base AS build
 WORKDIR /app
